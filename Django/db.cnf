@@ -1,0 +1,5 @@
+[client]
+dataset = test
+user = eddy
+password = eddyeddy
+default-character-set = utf8
