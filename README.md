@@ -17,7 +17,12 @@
     1. [快捷函數](#快捷函數)
     2. [改善模板硬編碼url](#改善模板硬編碼url)
     3. [為url名稱添加命名空間](#為url名稱添加命名空間)
-
+1. [第四階段](#第四階段)
+    1. [使用通用模板](#使用通用模板)
+1. [第五階段](#第五階段)
+    1. [自動化測試是什麼?](#自動化測試是什麼?)
+    2. [為甚麼需要寫測試](#為甚麼需要寫測試)
+    
 ### 第一階段
 #### 初始化專案
 - cd到專案資料夾下
@@ -141,5 +146,62 @@ admin.site.register(Question)
 <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
 ```
 #### 為url名稱添加命名空間
+- 在一個Django專案中，會有很多個應用，Django如何分辨重名的url?
+- Ans: 設置命名空間app_name
+- 在polls/url.py，增加app_name
+```
+app_name = 'polls'
+```
+
+### 第四階段
+#### 使用通用模板
+- 有些views只是單純的顯示某個html而已，不需要寫得太複雜，會存在冗余問題
+- 通用模板就是一個用來精簡程式碼的方式
+    1. 轉換URL conf
+    2. 刪除一些舊的，不需要的views
+    3. 基於Django的通用模板引入新的模板
+- 常見的模板是
+    1. [ListView](https://docs.djangoproject.com/zh-hans/3.1/ref/class-based-views/generic-display/#django.views.generic.list.ListView)
+        - context_object_name: 告訴Django你想使用的變量名，對應到html上面
+        - 需要override `get_queryset()` method，會回傳模型物件(models object)
+    2. [DetailView](https://docs.djangoproject.com/zh-hans/3.1/ref/class-based-views/generic-display/#django.views.generic.detail.DetailView)
+        - 會從URL中抓取`PK`的主健值，所以更改URL conf => pk
+
+### 第五階段
+#### 自動化測試是什麼?
+- 用來自動檢測你的code是否能正常運行，當你建立好一系列測試，每次修改code後，就可以自動檢測出修改後的code是否像你曾經預期的那樣運行，就不需要花費大量時間來手動測試
+#### 為甚麼需要寫測試
+- 測試將節省你的時間
+    - 在複雜的演算法中，能夠判斷出此code是否正常，就算是令人滿意的了，即可大大節省時間
+- 測試不僅能發現錯誤，還能預防錯誤
+    - 如果沒有測試，整個演算法的意圖會變得更加不清晰。就算你自己沒有意識到哪裡寫錯了，測試也會發現
+- 測試使你的code更有吸引力
+    - 沒有測試的code不值得信任，也能讓其他開發人員透過測試來了解前人的程式碼
+- 測試有利於團隊合作
+    - 複雜的程式可能由團隊來維護，測試的存在保證了協作者不會不小心破壞了你的程式
+#### 開始進行測試
+- 撰寫在tests.py內
+```python
+import datetime
+
+from django.test import TestCase
+from django.utils import timezone
+
+from .models import Question
 
 
+class QuestionModelTests(TestCase):
+
+    def test_was_published_recently_with_future_question(self):
+        """
+        was_published_recently() returns False for questions whose pub_date
+        is in the future.
+        """
+        time = timezone.now() + datetime.timedelta(days=30)
+        future_question = Question(pub_date=time)
+        self.assertIs(future_question.was_published_recently(), False)
+```
+- 運行測試
+```
+python manage.py test polls
+```

@@ -20,5 +20,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('polls/', include('polls.urls')),  # include 允许引用其它 URLconfs
+    path('pirate/', include('pirate.urls')),
 ]
 

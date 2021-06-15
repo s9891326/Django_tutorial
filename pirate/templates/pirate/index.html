@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pirate</title>
+</head>
+<body>
+{% if pirate_list %}
+    <ul>
+    {% for pirate in pirate_list %}
+        <li><a href="{% url 'pirate:detail' pirate.id %}">{{ pirate.name }}</a></li>
+        <ul>
+            <li>age:{{ pirate.age }}</li>
+            <li>bounty:{{ pirate.bounty }}</li>
+        </ul>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No pirates are available.</p>
+{% endif %}
+</body>
+</html>
