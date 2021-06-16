@@ -22,7 +22,13 @@
 1. [第五階段](#第五階段)
     1. [自動化測試是什麼?](#自動化測試是什麼?)
     2. [為甚麼需要寫測試](#為甚麼需要寫測試)
-    
+1. [第六階段](#第六階段)
+    1. [自訂義介面風格](#自訂義介面風格)
+    2. [增加背景圖](#增加背景圖)
+1. [第七階段](#第七階段)
+    1. [自訂義後台表單](#自訂義後台表單)
+    2. [添加關聯的對象](#添加關聯的對象)
+    3. [更改後台列表](#更改後台列表)
 ### 第一階段
 #### 初始化專案
 - cd到專案資料夾下
@@ -205,3 +211,72 @@ class QuestionModelTests(TestCase):
 ```
 python manage.py test polls
 ```
+- 測試小建議
+    1. 對每個模型和view都建立單獨的TestClass
+    2. 每個測試方法只測試一個功能
+    3. 給每個測試方式起個能描述其功能的名字
+
+### 第六階段
+#### 自訂義介面風格
+- 因為Django預設`STATIC_URL`對應到的是`'/static/'`，所以如果要自訂義介面風格(css)，可在該資料夾下創建css
+- 創建`polls/static/polls/style.css`，即可輸入一些css讓介面更改
+```
+li a {
+    color: green;
+}
+```
+- `polls/templates/polls/index.html`開頭處增加
+```
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+```
+#### 增加背景圖
+- css為以下，在此路徑下`polls/static/polls/images/background.gif`放圖片
+```
+body {
+    background: white url("images/background.gif") no-repeat;
+}
+```
+
+### 第七階段
+#### 自訂義後台表單
+- 可以重新排列models的資料欄位
+```
+from django.contrib import admin
+
+from .models import Question
+
+
+class QuestionAdmin(admin.ModelAdmin):
+    fields = ['pub_date', 'question_text']
+
+admin.site.register(Question, QuestionAdmin)
+```
+#### 添加關聯的對象
+- 一個Question有多個Choice，但原本的管理站台需要分開新增，這是一個困擾，所以可以透過下面的方式修改
+```
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 3
+
+
+class QuestionAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None,               {'fields': ['question_text']}),
+        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
+    ]
+    inlines = [ChoiceInline]
+
+admin.site.register(Question, QuestionAdmin)
+```
+#### 更改後台列表
+- 原本的後台列表只能顯示第一個欄位資訊(`__str__`)，可透過以下的方式一次顯示全部的欄位資料
+```
+class QuestionAdmin(admin.ModelAdmin):
+    # ...
+    list_display = ('question_text', 'pub_date', 'was_published_recently')
+```
+
+
+
