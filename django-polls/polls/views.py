@@ -2,6 +2,7 @@ from django.db.models import F
 from django.shortcuts import render
 from django.utils import timezone
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
@@ -34,8 +35,8 @@ from .models import Question, Choice
 #     }
 #     return render(request, 'polls/index.html', context)
 
-class IndexView(generic.ListView):
-    template_name = "polls/index.html"
+class IndexView(LoginRequiredMixin, generic.ListView):
+    template_name = "polls/templates/polls/index.html"
     context_object_name = "latest_question_list"
 
     def get_queryset(self):
@@ -75,7 +76,7 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     model = Question
-    template_name = "polls/detail.html"
+    template_name = "polls/templates/polls/detail.html"
 
     def get_queryset(self):
         """
@@ -92,7 +93,7 @@ class DetailView(generic.DetailView):
 
 class ResultView(generic.DetailView):
     model = Question
-    template_name = "polls/results.html"
+    template_name = "polls/templates/polls/results.html"
 
 
 def vote(request, question_id):
@@ -103,7 +104,7 @@ def vote(request, question_id):
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except (KeyError, Choice.DoesNotExist):
-        return render(request, 'polls/detail.html', {
+        return render(request, 'polls/templates/polls/detail.html', {
             'question': question,
             'error_message': "You didn't select a choice"
         })

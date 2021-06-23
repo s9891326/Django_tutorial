@@ -29,6 +29,7 @@
     1. [自訂義後台表單](#自訂義後台表單)
     2. [添加關聯的對象](#添加關聯的對象)
     3. [更改後台列表](#更改後台列表)
+1. [打包程式](#打包程式)
 ### 第一階段
 #### 初始化專案
 - cd到專案資料夾下
@@ -278,5 +279,14 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = ('question_text', 'pub_date', 'was_published_recently')
 ```
 
-
-
+### 打包程式
+- [官方教學](https://docs.djangoproject.com/zh-hans/3.1/intro/reusable-apps/)
+- [其他網站setup教學](https://zwindr.blogspot.com/2018/03/python-package.html)
+- 基本架構說明
+    1. setup.py    => 最重要的文件，包含了打包的參數和基本信息
+    2. setup.cfg   => setup.py 的命令配置文件，其格式為 INI
+    3. README.rst  => 介紹，格式若為 README.md 需額外設置 MANIFEST.in 打包此文件
+    4. MANIFEST.in => 指定需額外打包的文件
+    5. LICENSE.txt
+- 打包方式
+    1. python setup.py sdist  # sdist(Source Distributions)
